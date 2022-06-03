@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/nav_search">
+
+    <fragment
+        android:id="@+id/nav_search"
+        android:name="com.example.animelist.view.SearchFragment">
+<!-- action needs ->
+    id -> where it starts to where it ends
+     destination -> end point
+     -->
+        <action
+            android:id="@+id/action_nav_search_to_nav_list"
+            app:destination="@id/nav_list"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_list"
+        android:name="com.example.animelist.view.AnimeListFragment">
+
+        <action
+            android:id="@+id/nav_list_to_nav_details"
+            app:destination="@id/nav_details"/>
+        <!--   newInstance(id: String) -->
+        <argument
+            android:name="input"
+            app:argType="string"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_details"
+        android:name="com.example.animelist.view.DetailsFragment">
+
+        <argument
+            android:name="id"
+            app:argType="integer"/>
+    </fragment>
+
+</navigation>
