@@ -6,7 +6,7 @@
 
     <fragment
         android:id="@+id/nav_search"
-        android:name="com.example.animelist.view.SearchFragment">
+        android:name="com.example.animelist.view.fragment.SearchFragment">
 <!-- action needs ->
     id -> where it starts to where it ends
      destination -> end point
@@ -18,7 +18,7 @@
 
     <fragment
         android:id="@+id/nav_list"
-        android:name="com.example.animelist.view.AnimeListFragment">
+        android:name="com.example.animelist.view.fragment.AnimeListFragment">
 
         <action
             android:id="@+id/nav_list_to_nav_details"
@@ -31,11 +31,7 @@
 
     <fragment
         android:id="@+id/nav_details"
-        android:name="com.example.animelist.view.DetailsFragment">
-
-        <argument
-            android:name="id"
-            app:argType="integer"/>
+        android:name="com.example.animelist.view.fragment.DetailsFragment">
     </fragment>
 
 </navigation>
