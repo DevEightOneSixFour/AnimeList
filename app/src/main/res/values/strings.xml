@@ -3,4 +3,6 @@
     <string name="empty_text">Input cannot be blank</string>
     <string name="search_anime">Search Anime</string>
     <string name="details_episode_number"># of episodes: %s</string>
+    <string name="details_recommendations">Recommendations</string>
+    <string name="list_btn_details">details</string>
 </resources>

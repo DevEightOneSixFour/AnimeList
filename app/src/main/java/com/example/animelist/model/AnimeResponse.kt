@@ -1,8 +1,6 @@
 package com.example.animelist.model
 
-import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
-import kotlinx.android.parcel.Parcelize
 
 data class AnimeResponse(
     val data: List<AnimeData>,
@@ -14,18 +12,18 @@ data class Paging(
 )
 
 // Parcelable is needed to pass the data class as an argument in navigation
-@Parcelize
+// ^^ ended up not needing this, but if you want a reference for this use
+//      refer to YuGiOhDeckBuilder
 data class AnimeData(
-    val node: AnimeNode
-): Parcelable
+    val node: AnimeNode? = null
+)
 
-@Parcelize
 data class AnimeNode(
     val id: Int,
     val title: String,
     val rating: String,
     @SerializedName("main_picture")
-    val mainPicture: MainPicture,
+    val mainPicture: MainPicture? = null,
     val synopsis: String,
     val genres: List<AnimeGenre?>? = emptyList(),
     val recommendations: List<AnimeData?>? = emptyList(),
@@ -33,16 +31,14 @@ data class AnimeNode(
     val numEpisodes: Int,
     @SerializedName("related_anime")
     val relatedAnime: List<AnimeData?>? = emptyList()
-): Parcelable
+)
 
-@Parcelize
 data class AnimeGenre(
     val id: Int,
     val name: String
-): Parcelable
+)
 
-@Parcelize
 data class MainPicture(
     val medium: String,
     val large: String
-): Parcelable
+)

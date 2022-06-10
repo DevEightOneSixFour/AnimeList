@@ -12,7 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import javax.inject.Inject
 
-const val TAG = "*****"
+const val TAG = "AnimeViewModel"
 @HiltViewModel
 class AnimeViewModel @Inject constructor(
     private val repository: AnimeRepository,
@@ -39,17 +39,9 @@ class AnimeViewModel @Inject constructor(
 
     lateinit var currentAnime: AnimeNode
 
-    init {
-        getAllAnimeData()
-    }
-
-    fun getAllAnimeData() {
-
-    }
-    fun getAnimeList(q: String) {
-        Log.d(TAG, "getAnimeList: Starting network call")
+    fun getAnimeList(q: String, offset: Int) {
         viewModelSafeScope.launch(dispatcher) {
-            repository.getAnimeList(q).collect {
+            repository.getAnimeList(q, offset).collect {
                 _animeList.postValue(it)
             }
         }
@@ -63,10 +55,14 @@ class AnimeViewModel @Inject constructor(
         }
     }
 
+    /*
+        Using these set functions to start the opening fragments in the loading state.
+        This way they the api is only called when the fragment is first opened.
+     */
     fun setLoadingState() { _animeList.value = UIState.Loading }
 
     fun setAnimeDetails(node: AnimeNode) {
-        _animeDetails.value = UIState.Loading
         currentAnime = node
+        _animeDetails.value = UIState.Loading
     }
 }

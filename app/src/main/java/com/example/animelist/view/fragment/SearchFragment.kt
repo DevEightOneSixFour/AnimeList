@@ -1,12 +1,10 @@
 package com.example.animelist.view.fragment
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.animelist.R
 import com.example.animelist.databinding.FragmentSearchBinding
@@ -46,7 +44,6 @@ class SearchFragment : ViewModelFragment() {
                     the AnimeListFragment
              */
             viewModel.setLoadingState()
-            Log.d("*****", "search: $viewModel ")
             // using the navController to open the AnimeListFragment
             //      with the argument of the EditText
             findNavController().navigate(

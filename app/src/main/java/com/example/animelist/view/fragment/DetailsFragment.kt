@@ -27,8 +27,6 @@ class DetailsFragment: ViewModelFragment() {
         return binding.root
     }
 
-    private val animeNode: AnimeNode = viewModel.currentAnime
-
     private fun configureObserver() {
         viewModel.animeDetails.observe(viewLifecycleOwner) {
             when(it) {
@@ -42,18 +40,17 @@ class DetailsFragment: ViewModelFragment() {
                         tvDetailsError.visibility = View.VISIBLE
                     }
                 }
-                is UIState.Loading -> {
-                    loadingState()
-                }
+                // only calls when the page is first entered
+                //      or when reloading the page
+                is UIState.Loading -> { loadingState() }
             }
         }
     }
 
     private fun renderDetails(node: AnimeNode) {
-        viewModel.setAnimeDetails(node)
 
         Glide.with(binding.ivDetailImage)
-            .load(getUrlWithHeaders(animeNode.mainPicture.large))
+            .load(getUrlWithHeaders(node.mainPicture?.large))
             .into(binding.ivDetailImage)
 
         binding.apply {
@@ -61,22 +58,23 @@ class DetailsFragment: ViewModelFragment() {
             tvDetailsError.visibility = View.GONE
 
             tvDetailTitleText.apply {
-                text = animeNode.title
+                text = node.title
                 visibility = View.VISIBLE
             }
             tvDetailEpisodes.apply {
                 text = resources.getString(
                     R.string.details_episode_number,
-                    animeNode.numEpisodes.toString()
+                    node.numEpisodes.toString()
                 )
                 visibility = View.VISIBLE
             }
+            tvDetailRecommendations.visibility = View.VISIBLE
             ivDetailImage.visibility = View.VISIBLE
 
             nodeAdapter = AnimeNodeAdapter(reloadPage = ::reloadPage)
-            nodeAdapter.setNodeList(node.recommendations ?: emptyList())
+            nodeAdapter.setNodeList(node.recommendations)
             rvDetailsRecommendations.adapter = nodeAdapter
-
+            rvDetailsRecommendations.visibility = View.VISIBLE
         }
     }
 
@@ -88,12 +86,17 @@ class DetailsFragment: ViewModelFragment() {
             tvDetailRecommendations.visibility = View.GONE
             tvDetailEpisodes.visibility = View.GONE
             ivDetailImage.visibility = View.GONE
+            rvDetailsRecommendations.visibility = View.GONE
         }
-        viewModel.getAnimeDetails(animeNode.id)
+        // api call details starts here
+        viewModel.getAnimeDetails(viewModel.currentAnime.id)
     }
 
-    private fun reloadPage(node: AnimeNode) {
-        viewModel.setAnimeDetails(node)
+    private fun reloadPage(data: AnimeData) {
+        // changes the currentAnime in the ViewModel
+        //  and sets UIState to loading which reloads the page
+        //  with new data
+        viewModel.setAnimeDetails(data.node!!)
     }
 
     override fun onDestroyView() {

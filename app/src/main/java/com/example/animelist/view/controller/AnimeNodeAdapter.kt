@@ -12,7 +12,7 @@ import com.example.animelist.utils.GlideHelper.getUrlWithHeaders
 // adapter for the recommendations/related anime
 class AnimeNodeAdapter(
     private val nodeList: MutableList<AnimeData> = mutableListOf(),
-    private val reloadPage: (AnimeNode) -> Unit
+    private val reloadPage: (AnimeData) -> Unit
 ): RecyclerView.Adapter<AnimeNodeAdapter.AnimeNodeViewHolder>() {
 
     inner class AnimeNodeViewHolder(
@@ -20,24 +20,24 @@ class AnimeNodeAdapter(
         ): RecyclerView.ViewHolder(binding.root) {
             fun onBind(data: AnimeData) {
                 Glide.with(binding.ivNodeImage)
-                    .load(getUrlWithHeaders(data.node.mainPicture.medium))
+                    .load(getUrlWithHeaders(data.node?.mainPicture?.medium!!))
                     .into(binding.ivNodeImage)
                 binding.tvNodeTitle.text = data.node.title
 
                 binding.root.setOnClickListener {
-                    reloadPage(data.node)
+                    reloadPage(data)
                 }
             }
         }
 
     fun setNodeList(newList: List<AnimeData?>?) {
-        if (nodeList.isEmpty()) {
+        // sometimes recommendations are empty
+        if (newList?.isEmpty() == true) {
             nodeList.clear()
             notifyItemRangeChanged(0, itemCount)
         } else {
-
             nodeList.clear()
-            nodeList.addAll(newList as Collection<AnimeData>)
+            nodeList.addAll(newList as List<AnimeData>)
             notifyItemRangeChanged(0, itemCount)
         }
     }
