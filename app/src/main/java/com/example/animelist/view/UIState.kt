@@ -1,7 +1,5 @@
 package com.example.animelist.view
 
-import com.example.animelist.model.AnimeResponse
-
 // loading, error, success
 // used hold states of the app
 sealed class UIState {
@@ -10,7 +8,7 @@ sealed class UIState {
     class Success<T>(val response: T): UIState()
 }
 
-// a group of related constants
+// an enum is a group of related constants
 enum class DaysOfTheWeek {
     Monday, // = 0
     Tuesday, // = 1
@@ -18,7 +16,7 @@ enum class DaysOfTheWeek {
 }
 
 // an enum class with superpowers
-// a group of related classes/objects
+// a sealed class is a group of related classes/objects
 sealed class WeekDays {
     class Monday(val number: Int): WeekDays()
     data class Tuesday(val flag: Boolean): WeekDays()

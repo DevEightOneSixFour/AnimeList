@@ -1,9 +1,10 @@
 package com.example.animelist.api
 
+import com.example.animelist.model.AnimeNode
 import com.example.animelist.model.AnimeResponse
 import retrofit2.Response
 import retrofit2.http.GET
-import retrofit2.http.HEAD
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface CrunchyRoll {
@@ -11,21 +12,34 @@ interface CrunchyRoll {
     @GET(ANIME)
     suspend fun getAnimeList(
         @Query(Q) q: String,
-        @Query(LIMIT) limit: Int = 40
+        @Query(LIMIT) limit: Int = NUMBER_OF_ITEMS,
+        @Query(OFFSET) offset: Int = 0
     ): Response<AnimeResponse>
+
+    @GET(DETAILS)
+    suspend fun getAnimeDetails(
+        @Path(ANIME_ID) animeId: Int,
+        @Query(FIELDS) field: String = FIELD_STRINGS
+    ): Response<AnimeNode>
 
 //    @POST, @PUT, @DELETE, @HEAD
 
-
-
     companion object {
-        // https://api.myanimelist.net/v2/anime?q=dragon&limit=40
+        /*
+        full anime list url -> https://api.myanimelist.net/v2/anime?q=dragon&limit=40&offset=0
+        full details url -> https://api.myanimelist.net/v2/anime/6033?fields=id,title,main_picture,genres,recommendations
+         */
         const val BASE_URL = "https://api.myanimelist.net/v2/"
         const val ANIME = "anime"
+        const val ANIME_ID = "anime_id"
+        const val DETAILS = "$ANIME/{$ANIME_ID}"
+        const val FIELDS = "fields"
         const val Q = "q"
         const val LIMIT = "limit"
-
+        const val OFFSET = "offset"
+        const val NUMBER_OF_ITEMS = 40
+        const val FIELD_STRINGS = "id,title,main_picture,synopsis,genres,recommendations,num_episodes,related_anime"
         const val CLIENT_KEY = "X-MAL-CLIENT-ID"
-        const val KEY_VALUE = "3c3f84c0e414498d9240c05f5042206a"
+        const val KEY_VALUE = "2013f33d2173183199acc146d05af19c"
     }
 }

@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModelStoreOwner
 import com.example.animelist.api.AnimeRepositoryImpl
 import com.example.animelist.api.CrunchyRoll
 import com.example.animelist.viewmodel.AnimeViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -26,8 +28,8 @@ object DI {
 
     fun provideViewModel(owner: ViewModelStoreOwner): AnimeViewModel {
        return ViewModelProvider(owner, object: ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return AnimeViewModel(provideRepository()) as T
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return AnimeViewModel(provideRepository(), providesIODispatcher()) as T
             }
         })[AnimeViewModel::class.java]
     }
@@ -46,7 +48,6 @@ object DI {
                     is premium -> return PremiumUser()
             }
         }
-
      */
 
     private fun provideOkHttpClient(): OkHttpClient {
@@ -61,11 +62,13 @@ object DI {
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
             })
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .writeTimeout(30, TimeUnit.SECONDS)
+            .connectTimeout(5, TimeUnit.SECONDS)
+            .readTimeout(5, TimeUnit.SECONDS)
+            .writeTimeout(5, TimeUnit.SECONDS)
             .build()
     }
+
+    fun providesIODispatcher(): CoroutineDispatcher = Dispatchers.IO
 
     /*
     Network Status Codes
