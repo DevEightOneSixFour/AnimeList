@@ -37,7 +37,7 @@ interface CrunchyRoll {
         const val Q = "q"
         const val LIMIT = "limit"
         const val OFFSET = "offset"
-        const val NUMBER_OF_ITEMS = 40
+        const val NUMBER_OF_ITEMS = 10
         const val FIELD_STRINGS = "id,title,main_picture,synopsis,genres,recommendations,num_episodes,related_anime"
         const val CLIENT_KEY = "X-MAL-CLIENT-ID"
         const val KEY_VALUE = "2013f33d2173183199acc146d05af19c"

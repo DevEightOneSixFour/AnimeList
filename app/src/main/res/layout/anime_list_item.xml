@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
     app:cardCornerRadius="6dp"
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 <androidx.constraintlayout.widget.ConstraintLayout
@@ -15,6 +16,7 @@
         android:id="@+id/iv_list_image"
         android:layout_width="120dp"
         android:layout_height="0dp"
+        tools:src="@tools:sample/backgrounds/scenic"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"/>

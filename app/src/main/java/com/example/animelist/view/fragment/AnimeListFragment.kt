@@ -4,13 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import com.example.animelist.api.CrunchyRoll
 import com.example.animelist.databinding.FragmentAnimeListBinding
-import com.example.animelist.model.AnimeData
 import com.example.animelist.model.AnimeNode
 import com.example.animelist.model.AnimeResponse
 import com.example.animelist.view.controller.AnimeListPageAdapter
@@ -26,6 +24,10 @@ class AnimeListFragment : ViewModelFragment() {
     // navArgs() -> the arguments used to create the fragment
     private val args: AnimeListFragmentArgs by navArgs()
     private var currentOffset = 0
+
+    // loading more data affects the page on returning
+    // this flag is for both allowing for seamless infinite scrolling
+    //      and retain the page on return from details
     private var shouldUpdateList = false
 
     override fun onCreateView(
@@ -34,6 +36,7 @@ class AnimeListFragment : ViewModelFragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentAnimeListBinding.inflate(layoutInflater)
+        shouldUpdateList = false
         configureObserver()
         return binding.root
     }
@@ -43,6 +46,7 @@ class AnimeListFragment : ViewModelFragment() {
         viewModel.animeList.observe(viewLifecycleOwner) {
             when (it) {
                 is UIState.Success<*> -> {
+                    binding.pbLoading.visibility = View.GONE
                     renderList(it.response as AnimeResponse)
                 }
                 is UIState.Error -> {
@@ -53,7 +57,27 @@ class AnimeListFragment : ViewModelFragment() {
                     }
                 }
                 is UIState.Loading -> {
-                    viewModel.getAnimeList(args.input, offset = currentOffset)
+                    binding.rvAnimeList.apply {
+                        // Setting the adapter once
+                        animeListPageAdapter = AnimeListPageAdapter(openAnimeDetails = ::openAnimeDetails)
+                            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                                override fun onScrolled(
+                                    recyclerView: RecyclerView,
+                                    dx: Int,
+                                    dy: Int
+                                ) {
+                                    super.onScrolled(recyclerView, dx, dy)
+                                    if (!this@apply.canScrollVertically(1)) {
+                                        viewModel.getAnimeList(
+                                            q = args.input,
+                                            currentOffset + CrunchyRoll.NUMBER_OF_ITEMS
+                                        )
+                                        currentOffset += CrunchyRoll.NUMBER_OF_ITEMS
+                                    }
+                                }
+                            })
+                        viewModel.getAnimeList(args.input, offset = currentOffset)
+                    }
                 }
             }
         }
@@ -61,48 +85,16 @@ class AnimeListFragment : ViewModelFragment() {
 
     private fun renderList(response: AnimeResponse) {
         binding.apply {
-            pbLoading.visibility = View.GONE
-
-            rvAnimeList.apply {
-                // Setting the adapter once
-                if (!shouldUpdateList) {
-                    animeListPageAdapter =
-                        AnimeListPageAdapter(openAnimeDetails = ::openAnimeDetails)
-                    adapter = animeListPageAdapter
-                }
-                animeListPageAdapter.setAnimeList(
-                    response.data,
-                    shouldUpdateList
-                )
-                addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                    override fun onScrolled(
-                        recyclerView: RecyclerView,
-                        dx: Int,
-                        dy: Int
-                    ) {
-                        super.onScrolled(recyclerView, dx, dy)
-                        if (!rvAnimeList.canScrollVertically(1)) {
-                            shouldUpdateList = true
-                            viewModel.getAnimeList(
-                                q = args.input,
-                                currentOffset + CrunchyRoll.NUMBER_OF_ITEMS
-                            )
-                            Toast.makeText(
-                                context,
-                                "Loading more anime",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            currentOffset += CrunchyRoll.NUMBER_OF_ITEMS
-                        }
-                    }
-                })
+            animeListPageAdapter.setAnimeList(response.data)
+            if (!shouldUpdateList)  {
+                rvAnimeList.adapter = animeListPageAdapter
+                shouldUpdateList = true
             }
         }
     }
 
     private fun openAnimeDetails(node: AnimeNode) {
         viewModel.setAnimeDetails(node)
-        shouldUpdateList = false
         findNavController().navigate(
             AnimeListFragmentDirections.navListToNavDetails()
         )
